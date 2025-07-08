@@ -47,9 +47,7 @@ finished = threading.Event()
 
 
 def get_usb_iphone():
-    Type = 'usb'
-    if int(frida.__version__.split('.')[0]) < 12:
-        Type = 'tether'
+    device_types = ['tether', 'usb', 'remote']
     device_manager = frida.get_device_manager()
     changed = threading.Event()
 
@@ -60,7 +58,7 @@ def get_usb_iphone():
 
     device = None
     while device is None:
-        devices = [dev for dev in device_manager.enumerate_devices() if dev.type == Type]
+        devices = [dev for dev in device_manager.enumerate_devices() if dev.type in device_types and dev.id != 'barebone']
         if len(devices) == 0:
             print('Waiting for USB device...')
             changed.wait()
