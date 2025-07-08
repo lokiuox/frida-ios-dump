@@ -1,16 +1,39 @@
 # frida-ios-dump
-Pull a decrypted IPA from a jailbroken device
+Pull a decrypted IPA from a jailbroken device.
 
+This fork adds the following features:
+- Fixed to work with Frida 17+
+- Fixed to work over WiFi
+
+
+## Setup
+1. Install the [`frida`](http://www.frida.re/) and `openssh-server` packages on the target device
+2. Create a virtual environment: `python3 -m venv ./venv`
+3. Activate it: `source ./venv/bin/activate`
+4. Install packages: `pip install -r requirements.txt --upgrade`
+
+## Connect
+To check if the device is detected, you can run `frida-ls-devices`:
+```
+Id                      Type    Name             OS
+----------------------  ------  ---------------  --------------
+local                   local   Local System     macOS 15.5
+barebone                remote  GDB Remote Stub
+socket                  remote  Local Socket
+54eebb9a50a287349[...]  remote  iPad             iPhone OS 18.2 # <- This means it works
+```
+Otherwise, you can try to forward Frida's port via SSH:
+```sh
+ssh mobile@<TARGET_IP> -L 27042:127.0.0.1:27042 -L 2222:127.0.0.1:22
+```
+Note: if this works, it will appear as `socket`
 
 ## Usage
+```sh
+./dump.py -H <TARGET_IP> -p 22 <Display name|Bundle identifier>
+```
 
- 1. Install [frida](http://www.frida.re/) on device
- 2. `sudo pip install -r requirements.txt --upgrade`
- 3. Run usbmuxd/iproxy SSH forwarding over USB (Default 2222 -> 22). e.g. `iproxy 2222 22`
- 4. Run ./dump.py `Display name` or `Bundle identifier`
-
-For SSH/SCP make sure you have your public key added to the target device's ~/.ssh/authorized_keys file.
-
+### Sample log
 ```
 ./dump.py Aftenposten
 Start the target app Aftenposten
@@ -40,13 +63,12 @@ Congratulations!!! You've got a decrypted IPA file.
 
 Drag to [MonkeyDev](https://github.com/AloneMonkey/MonkeyDev), Happy hacking!
 
-## Support
+### Troubleshooting
 
-Python 2.x and 3.x
+### SSH root connection fails
+On recent iOS versions you may need to reset root's password. The old password is `alpine`, you can set it again as the new one or set a different one and specify it in `./dump.py` with the `-P` flag.
 
-
-### issues
-
+### Other issues
 If the following error occurs:
 
 * causes device to reboot
@@ -56,3 +78,38 @@ If the following error occurs:
 please open the application before dumping.
 
 
+## Help text
+```
+usage: dump.py [-h] [-l] [-o OUTPUT_IPA] [-H SSH_HOST] [-p SSH_PORT] [-u SSH_USER] [-P SSH_PASSWORD] [-K SSH_KEY_FILENAME] [target]
+
+frida-ios-dump (by AloneMonkey v2.0)
+
+positional arguments:
+  target                Bundle identifier or display name of the target app
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -l, --list            List the installed apps
+  -o OUTPUT_IPA, --output OUTPUT_IPA
+                        Specify name of the decrypted IPA
+  -H SSH_HOST, --host SSH_HOST
+                        Specify SSH hostname
+  -p SSH_PORT, --port SSH_PORT
+                        Specify SSH port
+  -u SSH_USER, --user SSH_USER
+                        Specify SSH username
+  -P SSH_PASSWORD, --password SSH_PASSWORD
+                        Specify SSH password
+  -K SSH_KEY_FILENAME, --key_filename SSH_KEY_FILENAME
+                        Specify SSH private key file path
+```
+
+## Development
+To change the `dump.js` script:
+1. `npm install`
+2. Change the script
+3. `npm run build`
+
+
+## Support
+Python 2.x and 3.x

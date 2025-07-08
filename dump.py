@@ -60,10 +60,11 @@ def get_usb_iphone():
     while device is None:
         devices = [dev for dev in device_manager.enumerate_devices() if dev.type in device_types and dev.id != 'barebone']
         if len(devices) == 0:
-            print('Waiting for USB device...')
+            print('Waiting for device...')
             changed.wait()
         else:
             device = devices[0]
+            print('Selected device with ID {}'.format(device.id))
 
     device_manager.off('changed', on_changed)
 
