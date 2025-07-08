@@ -3,3 +3,8 @@
 *.ipa
 
 frida/
+node_modules/
+venv/
+__pycache__/
+*.py[codz]
+*$py.class
