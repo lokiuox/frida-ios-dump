@@ -1,0 +1,16 @@
+{
+  "name": "frida-ios-dump-agent",
+  "version": "1.0.0",
+  "description": "Frida dump agent",
+  "private": true,
+  "main": "dump.js",
+  "type": "module",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "frida-compile dump.js -o dump-compiled.js -c",
+    "watch": "frida-compile dump.js -o dump-compiled.js -w"
+  },
+  "dependencies": {
+    "frida-objc-bridge": "^8.0.5"
+  }
+}

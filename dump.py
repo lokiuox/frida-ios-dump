@@ -30,7 +30,7 @@ if IS_PY2:
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
-DUMP_JS = os.path.join(script_dir, 'dump.js')
+DUMP_JS = os.path.join(script_dir, 'dump-compiled.js')
 
 User = 'root'
 Password = 'alpine'
